@@ -37,15 +37,15 @@ end
 
 function EventRelay.new(remote:RemoteEvent, config:config):EventRelay
 	EventRelayAssert(typeof(config) == "table","Expected a table/dictionary instead got "..typeof(config))
-	
+
 	setmetatable(config, {__index = {timeout = 10,ID = math.huge}})
 	local self = setmetatable({}, EventRelay)
-	
+
 	self.remote = remote
 	self.config = config
 	self.callback = nil
 	self.signal = nil
-	
+
 	return self
 end
 
@@ -64,16 +64,19 @@ end
 
 function EventRelay:Listen(callback:(any) -> any?):number
 	if callback or self.callback then
+		local success = false
+		local count = 0
+		self.callback = callback
 		self:StopListening()
 		self.signal = self.remote.OnServerEvent:Connect(function(plr,...)
 			if plr == self.config.player then
-				self.callback(plr,...)
+				callback(plr,...)
 			end
+			success = true
 			self:StopListening()
-			return 1
 		end)
-		task.wait(self.config.timeout)
-		return 0
+		repeat task.wait(0.5) count += 1 until success == true or count >= self.config.timeout * 2
+		return if success then 1 else 0
 	end
 end
 
