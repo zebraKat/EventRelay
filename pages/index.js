@@ -57,7 +57,7 @@ function HomepageHeader() {
       <div className="container">
         <h1 className={titleClassName}>{siteConfig.title}</h1>
         <p className={taglineClassName}>{siteConfig.tagline}</p>
-        <div className={styles.buttons}>
+        <div className={styles.buttons} onClick={window.location = "https://zebrakat.github.io/EventRelay/api/EventRelay"}>
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro"
